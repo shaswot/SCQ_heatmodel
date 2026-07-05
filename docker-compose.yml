@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: SCQ_heatmodel:20260605
+    image: scq_heatmodel:20260605
     
     # Container Name
     container_name: SCQ_heatmodel
@@ -13,7 +13,7 @@ services:
     # Port Forwarding
     # Host_Machine_Port:Container_Port
     ports:
-      - "8888:8888"  # JupyterLab
+      - "1168:8888"  # JupyterLab
 
     # Volumes
     volumes:
