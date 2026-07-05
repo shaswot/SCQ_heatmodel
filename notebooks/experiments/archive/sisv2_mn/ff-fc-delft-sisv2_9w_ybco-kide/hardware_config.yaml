@@ -1,0 +1,225 @@
+######################
+# Fridge Configuration
+######################
+FRIDGE_NAME: KIDE_v3
+
+######################
+# Qubit Configuration
+######################
+QUBIT_FREQ:     "FIXED"
+QUBIT_COUPLING: "FIXED"  
+
+QUBIT_TYPES: # from spreadsheet (inspired by 2017versluisScalableQuantumCircuit)
+    DATA : 4 
+    ANCILLA: 4
+    # COUPLER: 14 # Refer Explanations no. 5
+
+OPERATIONS:
+    - 1Q
+    - 2Q
+    - READOUT
+    - IDLE
+
+DRIVE_MUX: 1 # Number of signals that are frequency multiplexed in a single DRIVE line
+READIN_MUX: 1 # Number of signals that are frequency multiplexed in a single READOUT_PIN line
+READOUT_GROUP_SIZE: 4 # [2025springFastMultiplexedSuperconductingQubit]
+
+######################
+# Cable Configuration
+######################
+CABLE_TYPES:
+  - DRIVE    # Single + Two Qubit Gate Operations
+  # - FLUX_BIAS # Qubit Biasing Line
+  # - COUPLER     # 2Q operations
+  - PUMP
+  - READOUT_PIN
+  - READOUT_POUT
+  - AMP_BIAS  # Amplifier Biasing Line
+
+# DC_PARAMS:
+#     R_4K: 0.14
+#     R_CP: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
+#     R_MXC: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
+#     I_BIAS: 1.0E-3
+#     I_2Q: 0.0 #0.4E-3
+
+
+CABLE_CONFIG_NAMES: 
+  DRIVE: # [https://delft-circuits.com/product-overview/drive-lines/]
+    RT:    null
+    50K:   null
+    4K:    Ag
+    Still: Ag
+    CP:    Ag
+    MXC:   Ag
+  # FLUX_BIAS:  # [https://delft-circuits.com/product-overview/flux-lines/]
+  #   RT:    null
+  #   50K:   Ag
+  #   4K:    Ag
+  #   Still: NbTi
+  #   CP:    NbTi
+  #   MXC:   NbTi
+  # COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/]
+  #   RT:    null
+  #   50K:   Ag
+  #   4K:    Ag
+  #   Still: NbTi
+  #   CP:    NbTi
+  #   MXC:   NbTi
+  PUMP: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
+    RT:    null
+    50K:   null
+    4K:    Ag
+    Still: Ag
+    CP:    Ag
+    MXC:   Ag
+  READOUT_PIN: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
+    RT:    null
+    50K:   null
+    4K:    Ag
+    Still: Ag
+    CP:    Ag
+    MXC:   Ag
+  READOUT_POUT: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
+    RT:    null
+    50K:   null
+    4K:    Ag
+    Still: NbTi
+    CP:    NbTi
+    MXC:   NbTi
+  AMP_BIAS:  # DC Bias Lines
+    RT:    null
+    50K:   null
+    4K:    SIS_v2_9w_Bias_YBCO
+    Still: null
+    CP:    null
+    MXC:   null
+
+###################
+# Activation Matrix
+###################
+# Describes which cables can perform what operations
+ACTIVATION_MATRIX:
+    DRIVE:
+        - 1Q
+        - 2Q
+    # FLUX_BIAS: # always ON
+    #     - IDLE
+    # COUPLER: 
+    #     - 2Q
+    PUMP:
+        - READOUT
+    READOUT_PIN:
+        - READOUT
+    READOUT_POUT:
+        - READOUT
+    AMP_BIAS: # always ON
+        - IDLE
+
+##########################
+# Attenuator Configuration
+##########################
+ATT_CONFIG: # arbitrary adding to 60 dB
+  DRIVE: # 
+    RT:    0
+    50K:   0
+    4K:    20
+    Still: 10
+    CP:    10
+    MXC:   20
+  # FLUX_BIAS: 
+  #   RT:    0
+  #   50K:   0
+  #   4K:    0 # modelling 20dB attenuation as ohmic resistor
+  #   Still: 0
+  #   CP:    0
+  #   MXC:   0
+  # COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/, 
+  #   RT:    0
+  #   50K:   0
+  #   4K:    0 # modelling 20dB attenuation as ohmic resistor
+  #   Still: 0
+  #   CP:    0  
+  #   MXC:   0
+  PUMP: # [2019krinnerEngineeringCryogenicSetups, 2024gunyhoSingleshotReadoutSuperconducting]
+    RT:    0
+    50K:   0
+    4K:    20
+    Still: 0
+    CP:    10
+    MXC:   20
+  READOUT_PIN: # Assuming same as the DRIVE line
+    RT:    0
+    50K:   0
+    4K:    20
+    Still: 10
+    CP:    10
+    MXC:   20
+  READOUT_POUT:
+    RT:    0
+    50K:   0
+    4K:    0
+    Still: 0
+    CP:    0
+    MXC:   0
+  AMP_BIAS: 
+    RT:    0
+    50K:   0
+    4K:    0
+    Still: 0
+    CP:    0
+    MXC:   0
+
+##########################
+# Component Configuration
+##########################
+COMP_CONFIG_NAMES:
+  DRIVE:
+    RT:    null
+    50K:   null
+    4K:    null
+    Still: null
+    CP:    null
+    MXC:   null
+  # FLUX_BIAS:
+  #   RT:    null
+  #   50K:   null
+  #   4K:    BIAS_RESISTOR_4K
+  #   Still: null
+  #   CP:    BIAS_RESISTOR_CP  # modeling the dissipation at CP due to cable resistance as a component
+  #   MXC:   BIAS_RESISTOR_MXC # modeling the dissipation at MXC due to cable resistance as a component
+  # COUPLER:
+  #   RT:    null
+  #   50K:   null
+  #   4K:    RESISTOR_2Q_4K
+  #   Still: null
+  #   CP:    RESISTOR_2Q_CP
+  #   MXC:   RESISTOR_2Q_MXC
+  PUMP:
+    RT:    null
+    50K:   null
+    4K:    null
+    Still: null
+    CP:    null
+    MXC:   null
+  READOUT_PIN:
+    RT:    null
+    50K:   null
+    4K:    null
+    Still: null
+    CP:    null
+    MXC:   null
+  READOUT_POUT:
+    RT:    null
+    50K:   null
+    4K:    null
+    Still: null
+    CP:    null
+    MXC:   null
+  AMP_BIAS:
+    RT:    null
+    50K:   null
+    4K:    SIS # Ohmic resistor will be added later on
+    Still: null
+    CP:    null
+    MXC:   null
