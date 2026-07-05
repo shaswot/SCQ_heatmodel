@@ -1,6 +1,6 @@
 ############### ESM_CX_a ############################################
-ESM_CX_a = {
-    "NAME": "ESM_CX_a",
+ESM_CX = {
+    "NAME": "ESM_CX",
     "LATENCY": { 
         "1Q": 42.67, # ns [2024underwoodUsingCryogenicCMOSa - Fig 2. caption]
         "2Q": 71.1, # ns [2024underwoodUsingCryogenicCMOSa - Fig 2. caption]
@@ -17,8 +17,8 @@ ESM_CX_a = {
 }
 
 ############## ESM_CZ_a ############################################
-ESM_CZ_a = {
-    "NAME": "ESM_CZ_a",
+ESM_CZ = {
+    "NAME": "ESM_CZ",
     "LATENCY": { 
         "1Q": 25, # ns [2025acharyaQuantumErrorCorrection - 105 qubit]
         "2Q": 42, # ns [2025acharyaQuantumErrorCorrection - 105 qubit]

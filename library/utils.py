@@ -350,3 +350,41 @@ def dBm2Watts(dBm):
         return 10 ** ((dBm-30)/10)
     else:
         return 0
+#######################################################################
+def get_NO_OF_CABLES(QUBIT_TYPES, QUBIT_FREQ, QUBIT_COUPLING, READOUT_GROUP_SIZE):
+    """Return the number of physical lines needed for each cable type.
+    """
+    qubit_freq = str(QUBIT_FREQ).strip().upper()
+    qubit_coupling = str(QUBIT_COUPLING).strip().upper()
+    num_qubits = QUBIT_TYPES["DATA"] + QUBIT_TYPES["ANCILLA"]
+
+    no_of_cables = {
+        "DRIVE": num_qubits,
+        "PUMP": num_qubits / READOUT_GROUP_SIZE,
+        "READOUT_PIN": num_qubits / READOUT_GROUP_SIZE,
+        "READOUT_POUT": num_qubits / READOUT_GROUP_SIZE,
+        "AMP_BIAS": num_qubits / READOUT_GROUP_SIZE,
+        "AMP_BIAS_50K": num_qubits / READOUT_GROUP_SIZE,
+        "DC_TERMINAL": num_qubits / READOUT_GROUP_SIZE,
+    }
+
+    if qubit_freq == "TUNABLE":
+        no_of_cables["FLUX_BIAS"] = num_qubits
+
+    if qubit_coupling == "TUNABLE":
+        no_of_cables["COUPLER"] = QUBIT_TYPES["COUPLER"]
+
+    return no_of_cables
+    
+#######################################################################
+def get_MUX_RATIO(OPERATIONS, DRIVE_MUX, READIN_MUX, READOUT_GROUP_SIZE):
+    """Return operation-count correction factors from drive/readout muxing."""
+    mux_ratio = {}
+    for operation in OPERATIONS:
+        mux_ratio[operation] = 1.0
+
+    mux_ratio["1Q"] = 1 / DRIVE_MUX
+    mux_ratio["2Q"] = 1 / DRIVE_MUX
+    mux_ratio["READOUT"] = 1 / (READIN_MUX * READOUT_GROUP_SIZE)
+
+    return mux_ratio

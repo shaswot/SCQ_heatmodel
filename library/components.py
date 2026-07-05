@@ -402,6 +402,57 @@ class RESISTOR_2Q():
         return power
 ########################################################################
 
+class PhotoDetector():
+    def __init__(self, Z, R, name):
+        """
+        Z : float
+            Load impedance seen by the photodiode (in ohms).
+        R : float
+            Photodiode responsivity (in amperes per watt), i.e. A/W.
+            A prefectly efficient photodiode has R = 1.2 Amp per Watt for a wavelength of 1490 nm
+        MXC_POWER: dict
+            Power required at the qubit for various operations (1Q, 2Q and Readout) in dBm
+        name : stf
+            Name of the Photodiode component
+        """
+        self.Z = Z
+        self.R = R
+        self.name = name
+    
+    def power_dissipation(self, operation, MXC_POWER):
+        """
+        Calculates the active heat load (P_act) in a photonic-link approach, 
+        where all incident optical power is dissipated at millikelvin temperature.
+        
+        Parameters
+        ----------
+        operation : str
+            Type　of operation i.e., 1Q, 2Q or Readout
+
+        MXC_POWER : dict
+            Power required at MXC for [cable_type][operation]
+        Returns
+        -------
+        float
+            The active heat load P_act (in watts).
+        """
+        power = 0.0
+        # P_mu = Desired microwave power at the qubit (in watts).
+        P_mu = None
+        if operation == '1Q':
+            P_mu = dBm2Watts(MXC_POWER['DRIVE']['1Q'])
+        elif operation == '2Q':
+            P_mu = dBm2Watts(MXC_POWER['DRIVE']['2Q'])
+        elif operation == 'READOUT':
+            P_mu = dBm2Watts(MXC_POWER['READOUT_PIN']['READOUT'])
+        
+        # Implements: P_act = sqrt( (2 * P_mu) / (Z * R^2) )
+        if P_mu is not None:
+            power = np.sqrt(2.0 * P_mu / self.Z) / self.R
+
+        return power
+########################################################################
+
 # Component Instantiations
 def create_comp_instance(comp_type_str):
     if comp_type_str == "HEMT_8G":
