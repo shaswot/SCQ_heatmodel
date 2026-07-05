@@ -10,9 +10,9 @@ from typing import Any, Dict, List, Union
 from matplotlib.font_manager import FontProperties
 title_font = FontProperties(family='Arial',size=10, weight='bold')
 axis_label_font = FontProperties(family='Arial',size=9, weight='bold')
-tick_label_font = FontProperties(family='Arial',size=8, weight='light')
-legend_font = FontProperties(family='Arial',size=5, weight='light')
-text_font = FontProperties(family='Arial',size=7, weight='light')
+tick_label_font = FontProperties(family='Arial',size=8)
+legend_font = FontProperties(family='Arial',size=5)
+text_font = FontProperties(family='Arial',size=7)
 
 fontstyle = [title_font, axis_label_font, tick_label_font, legend_font, text_font]
 style_map = {
