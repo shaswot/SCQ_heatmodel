@@ -23,9 +23,6 @@ RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
     tini \
     xpra \
     xserver-xorg-dev \
-    texlive-latex-recommended \
-    texlive-latex-extra \
-    texlive-pictures \
     poppler-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -59,6 +56,7 @@ RUN pip install --upgrade pip && \
     stim \
     sinter \
     pymatching \
+	pandas \
     "numpy<2.0"
 
 EXPOSE 8888
