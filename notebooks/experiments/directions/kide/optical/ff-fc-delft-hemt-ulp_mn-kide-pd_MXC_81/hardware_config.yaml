@@ -8,6 +8,9 @@ FRIDGE_NAME: KIDE
 ######################
 QUBIT_FREQ:     "FIXED"
 QUBIT_COUPLING: "FIXED"  
+# Selects the non-default drive powers (-86 dBm for 1Q, -81 dBm for 2Q)
+# defined centrally in library/mxc_powers.py.
+DRIVE_POWER_PROFILE: MXC_81
 
 QUBIT_TYPES: # from spreadsheet (inspired by 2017versluisScalableQuantumCircuit)
     DATA : 4 
