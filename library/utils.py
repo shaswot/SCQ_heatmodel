@@ -282,6 +282,7 @@ def _process_commas_recursively(obj: Any) -> Any:
                 return parts
         return s
     return obj
+#######################################################################
 
 def load_config(config_file: str|Path) -> dict:
     """
@@ -292,7 +293,7 @@ def load_config(config_file: str|Path) -> dict:
     with path.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     return _process_commas_recursively(data)
-
+#######################################################################
 
 def check_activation_matrix(activation_matrix, operations):
     """
@@ -323,13 +324,14 @@ def check_activation_matrix(activation_matrix, operations):
         raise ValueError(error_message)
     
     return True
-
+#######################################################################
 
 def watts_to_dbm(power_watts):
     # Avoid taking log of zero or negative numbers by setting them to NaN
     if power_watts <= 0:
         return np.nan
     return 10 * np.log10(power_watts * 1000)
+#######################################################################
 
 def dBm2Watts(dBm):
     """
@@ -348,79 +350,3 @@ def dBm2Watts(dBm):
         return 10 ** ((dBm-30)/10)
     else:
         return 0
-
-    
-# def get_OPERATION_COUNTS(OPERATIONS, QUBIT_TYPES, WORKLOAD):
-#     OPERATIONS_Spec= WORKLOAD["OPERATIONS_Spec"]
-    
-#     # Workload requires a certain number of qubits.
-#     # Given the system qubit size, calculate the number of qubit groups
-#     no_of_groups = {}
-#     for qubit_type in ["DATA", "ANCILLA"]:
-#         no_of_groups[qubit_type] = QUBIT_TYPES[qubit_type]/WORKLOAD[qubit_type]
-#         if not no_of_groups[qubit_type].is_integer():
-#             error_message = f"Number of Qubit Groups = {no_of_groups[qubit_type]} is not an integer."
-#             raise ValueError(error_message)
-    
-#     # Calculate the different types of operations and the total number of operations for a given workload
-#     OPERATION_COUNTS = {}
-#     for qubit_type, count_dict in OPERATIONS_Spec.items():
-#         OPERATION_COUNTS[qubit_type] = {}
-#         for operation, operation_count in count_dict.items():
-#             OPERATION_COUNTS[qubit_type][operation] = operation_count * no_of_groups[qubit_type]
-    
-#     # Sum the subkey values into a new dictionary
-#     total_operations = {}
-#     for operation in OPERATIONS:
-#         total_operations[operation] = 0
-#         for qubit_type in OPERATION_COUNTS.keys():
-#             total_operations[operation] = total_operations[operation] + OPERATION_COUNTS[qubit_type][operation]
-    
-#     if "COUPLER" in QUBIT_TYPES:
-#         OPERATION_COUNTS["COUPLER"] = {}
-#         for op in OPERATIONS:
-#             OPERATION_COUNTS["COUPLER"][op] = 0.0
-#         OPERATION_COUNTS["COUPLER"]["2Q"] = OPERATION_COUNTS["DATA"]["2Q"] + OPERATION_COUNTS["ANCILLA"]["2Q"] 
-    
-#     OPERATION_COUNTS["TOTAL"] = total_operations
-#     return OPERATION_COUNTS
-
-
-# def get_DUTY_CYCLES(OPERATIONS, OPERATION_COUNTS, LATENCY, QUBIT_TYPES):
-#     # Check that OPERATION_COUNTS has the same or subset of keys in the first level as QUBIT_TYPES
-#     if set(OPERATION_COUNTS.keys()) <= set(QUBIT_TYPES.keys()):
-#         raise ValueError(
-#             f"Top-level keys mismatch:\n"
-#             f"OPERATION_COUNTS keys: {set(OPERATION_COUNTS.keys())}\n"
-#             f"QUBIT_TYPES keys: {set(QUBIT_TYPES.keys())}"
-#         )
-    
-#     # Check that OPERATION_COUNTS has the same keys in the second level as OPERATIONS
-#     expected_op_keys = set(OPERATIONS)
-    
-#     for label, op_dict in OPERATION_COUNTS.items():
-#         if set(op_dict.keys()) != expected_op_keys:
-#             raise ValueError(
-#                 f"Second-level keys mismatch for '{label}':\n"
-#                 f"Expected: {expected_op_keys}\n"
-#                 f"Found: {set(op_dict.keys())}"
-#             )
-
-#     # First compute each qubit type’s duty cycles
-#     OPERATION_DUTY_CYCLES = {}
-#     for qubit_type, operation_count_dict in OPERATION_COUNTS.items():
-#         OPERATION_DUTY_CYCLES[qubit_type] = {}
-#         for operation, count in operation_count_dict.items():
-#             OPERATION_DUTY_CYCLES[qubit_type][operation] = OPERATION_COUNTS[qubit_type][operation] * LATENCY[operation] / LATENCY["TOTAL"]
-
-#     # Then do a weighted average based on how many data vs. ancilla qubits
-#     AVG_OPERATION_DUTY_CYCLES = {
-#         op: np.average(
-#             [OPERATION_DUTY_CYCLES[qtype][op] for qtype in QUBIT_TYPES],
-#             weights=[QUBIT_TYPES[qtype] for qtype in QUBIT_TYPES]
-#         )
-#         for op in OPERATIONS
-#     }
-
-#     return OPERATION_DUTY_CYCLES, AVG_OPERATION_DUTY_CYCLES
-
