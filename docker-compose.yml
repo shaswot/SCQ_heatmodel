@@ -1,0 +1,32 @@
+services:
+  # Set service name
+  thermal-scalability:
+    # Build Context
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: SCQ_heatmodel:20260605
+    
+    # Container Name
+    container_name: SCQ_heatmodel
+
+    # Port Forwarding
+    # Host_Machine_Port:Container_Port
+    ports:
+      - "8888:8888"  # JupyterLab
+
+    # Volumes
+    volumes:
+      # Maps your entire current project folder on the host (.)
+      # to a folder inside the container.
+      - ./:/repos/SCQ_heatmodel
+      
+    # Runtime Configuration
+    environment:
+      - JUPYTER_TOKEN=tqe
+    
+    # Keep the container running (replaces -dit)
+    stdin_open: true
+    tty: true
+    # Ensures the container doesn't stop immediately if an error occurs
+    restart: unless-stopped
