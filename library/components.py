@@ -8,11 +8,12 @@ PROJ_ROOT =  str(PROJ_ROOT_PATH)
 if PROJ_ROOT not in sys.path:
     sys.path.append(PROJ_ROOT)
 #####################################################
+
 import numpy as np
 from scipy.integrate import quad
 import math
-from library.cables import R_Cu_4K, R_Cu_50K, R_Manganin_4K, R_Manganin_50K
 from library.utils import watts_to_dbm, dBm2Watts
+
 #####################################################
 # Add DC resistance for flux-bias and coupler-bias lines
 def add_flux_coupler_DC_resistance(COMP_CONFIG,
@@ -149,6 +150,7 @@ def add_ohmic_resistors_amp_at_4K(CABLE_CONFIG_NAMES, COMP_CONFIG, fridge):
                 COMP_CONFIG['AMP_BIAS']['50K'] = [ohmic_resistor]
     return COMP_CONFIG
 ########################################################################
+
 def add_ohmic_resistors_amp_at_50K(CABLE_CONFIG_NAMES, COMP_CONFIG, fridge):
     # Determine current in amplifier
     current = None
@@ -220,6 +222,7 @@ class AMPLIFIER():
         
         power = self.V * self.I # dissipative power in Watts due to biasing (always ON)
         return power # dissipative power in Watts due to biasing (always ON)
+########################################################################
 
 class AMP_OHMIC_RESISTOR():
     def __init__(self,R,I,name):
@@ -264,6 +267,7 @@ class AMP_OHMIC_RESISTOR():
             ### factor = 0.5: assuming joule heat flows equally into 50K and 4K thermal plate anchors
             power = 0.5 * 2 * self.I**2 * self.R
             return power
+########################################################################
 
 def SIS_current_split(SIS_I, num_LO_pair):
     # split_no: No. of wires in which LO current is split
@@ -277,6 +281,7 @@ def SIS_current_split(SIS_I, num_LO_pair):
     SIS_GND      = SIS_up + SIS_down
     SIS_LO       = SIS_I/ num_LO_pair # split current flowing through single wire 
     return [SIS_up, SIS_up_vs1, SIS_up_vs2, SIS_down, SIS_down_vs1, SIS_down_vs2, SIS_GND, SIS_LO, num_LO_pair]
+########################################################################
 
 class SIS_OHMIC_RESISTOR():
     def __init__(self,R, current_list, name):
@@ -334,6 +339,7 @@ class SIS_OHMIC_RESISTOR():
                     P_down + P_down_vs1 + P_down_vs2 + \
                     P_GND + P_LO
         return power
+########################################################################
 
 class BIAS_RESISTOR():
     def __init__(self, name):
@@ -364,6 +370,7 @@ class BIAS_RESISTOR():
             power = self.R * self.I_BIAS**2
 
         return power
+########################################################################
 
 class RESISTOR_2Q():
     def __init__(self, name):
@@ -393,166 +400,7 @@ class RESISTOR_2Q():
             power =   self.R * self.I_2Q**2
             
         return power
-
-# Photomixer Class (Target)
-#####################
-class PhotoMixer():
-    def __init__(self, reflection_coefficient, input_power_dict, name):
-        """
-        reflection_coefficient: float
-            Power reflected (dissipated) as a fraction of input (optical) power, P_in
-
-        input_power_dict: dict
-            Dictionary for input (optical) power for each operation (1Q, 2Q and Readout)
-
-        name : stf
-            Name of the PhotoMixer component
-        """
-        self.input_power_dict = input_power_dict
-        self.reflection_coefficient = reflection_coefficient
-        self.name = name
-
-    def power_dissipation(self, operation,  MXC_POWER):
-        """
-        Calculates the active heat load (P_act) in a photonic-link approach, 
-        where all incident optical power is dissipated at millikelvin temperature.
-        
-        Parameters
-        ----------
-        operation : str
-            Type　of operation i.e., 1Q, 2Q or Readout
-        
-        MXC_POWER : dict
-            Power required at MXC for [cable_type][operation]
-            
-        Returns
-        -------
-        float
-            The active heat load P_act (in watts).
-        """
-        P_operation = 0.0 # active power dissipated
-
-        P_mu = None
-        if operation == '1Q':
-            P_in = dBm2Watts(self.input_power_dict['1Q'])
-            P_operation = self.reflection_coefficient * P_in
-        elif operation == '2Q':
-            P_in = dBm2Watts(self.input_power_dict['2Q'])
-            P_operation = self.reflection_coefficient * P_in
-        elif operation == 'READOUT':
-            P_in = dBm2Watts(self.input_power_dict['READOUT'])
-            P_operation = self.reflection_coefficient * P_in
-        return P_operation
-#####################
-        
-
-
-
-class PhotoDetector():
-    def __init__(self, Z, R, name):
-        """
-        Z : float
-            Load impedance seen by the photodiode (in ohms).
-        R : float
-            Photodiode responsivity (in amperes per watt), i.e. A/W.
-            A prefectly efficient photodiode has R = 1.2 Amp per Watt for a wavelength of 1490 nm
-        MXC_POWER: dict
-            Power required at the qubit for various operations (1Q, 2Q and Readout) in dBm
-        name : stf
-            Name of the Photodiode component
-        """
-        self.Z = Z
-        self.R = R
-        self.name = name
-    
-    def power_dissipation(self, operation, MXC_POWER):
-        """
-        Calculates the active heat load (P_act) in a photonic-link approach, 
-        where all incident optical power is dissipated at millikelvin temperature.
-        
-        Parameters
-        ----------
-        operation : str
-            Type　of operation i.e., 1Q, 2Q or Readout
-
-        MXC_POWER : dict
-            Power required at MXC for [cable_type][operation]
-        Returns
-        -------
-        float
-            The active heat load P_act (in watts).
-        """
-        power = 0.0
-        # P_mu = Desired microwave power at the qubit (in watts).
-        P_mu = None
-        if operation == '1Q':
-            P_mu = dBm2Watts(MXC_POWER['DRIVE']['1Q'])
-        elif operation == '2Q':
-            P_mu = dBm2Watts(MXC_POWER['DRIVE']['2Q'])
-        elif operation == 'READOUT':
-            P_mu = dBm2Watts(MXC_POWER['READOUT_PIN']['READOUT'])
-        
-        # Implements: P_act = sqrt( (2 * P_mu) / (Z * R^2) )
-        if P_mu is not None:
-            power = np.sqrt(2.0 * P_mu / self.Z) / self.R
-
-        return power
-
-################################################################################
-      
-################################################################################
-# JJ Detector Integrated with Photomixer
-#################
-class JJ_Detector():
-    def __init__(self, power, name):
-        self.name = name
-        self.power = power
-
-    def power_dissipation(self, *args, **kwargs):
-        operation = None
-        MXC_POWER = None
-        
-        # assign from positional args first
-        if len(args) >= 1:
-            operation = args[0]
-        if len(args) >= 2:
-            MXC_POWER = args[1]
-        
-        # then override with kwargs if present
-        if "operation" in kwargs:
-            operation = kwargs["operation"]
-        if "MXC_POWER" in kwargs:
-            MXC_POWER = kwargs["MXC_POWER"]
-            
-        return self.power # dissipative power in Watts due to biasing (always ON)
-################################################################################
-      
-################################################################################
-# JJ Detector Integrated with Photomixer
-#################
-class CTRL():
-    def __init__(self, power, name):
-        self.name = name
-        self.power = power
-
-    def power_dissipation(self, *args, **kwargs):
-        operation = None
-        MXC_POWER = None
-        
-        # assign from positional args first
-        if len(args) >= 1:
-            operation = args[0]
-        if len(args) >= 2:
-            MXC_POWER = args[1]
-        
-        # then override with kwargs if present
-        if "operation" in kwargs:
-            operation = kwargs["operation"]
-        if "MXC_POWER" in kwargs:
-            MXC_POWER = kwargs["MXC_POWER"]
-            
-        return self.power # dissipative power in Watts due to biasing (always ON)
-################################################################################
+########################################################################
 
 # Component Instantiations
 def create_comp_instance(comp_type_str):
@@ -591,35 +439,6 @@ def create_comp_instance(comp_type_str):
         HEMT_I = 15E-3 # Amperes
         HEMT = AMPLIFIER(HEMT_V, HEMT_I, comp_type_str)
         return HEMT
-    # elif comp_type_str == "HEMT_LP":
-    #     # HEMT Amplifier Instantiation
-    #     # 2024zengSubmWCryogenicInP
-    #     # Real values from Fig. 13
-    #     # (0.06 V * 1 mA) + (0.05 V * 0.8 mA) = 100 uW
-    #     # Equivalent values
-    #     HEMT_V = 10E-3 # Volts
-    #     HEMT_I = 10E-3 # Amperes
-    #     HEMT = AMPLIFIER(HEMT_V, HEMT_I, comp_type_str)
-    #     return HEMT 
-    # elif comp_type_str == "HEMT_8C":
-    #     # HEMT Amplifier Instantiation
-    #     # LNF-LNC4_8C [2019krinnerEngineeringCryogenicSetups]
-    #     # https://lownoisefactory.com/wp-content/uploads/2022/03/lnf-lnc4_8c.pdf
-    #     HEMT_GAIN = 42 # in dB 
-    #     no_of_wires = 2 # (Vd, Gnd)
-    #     HEMT_R = no_of_wires * 0 # Ohms, resistance of biasing wire
-    #     HEMT_V = 0.7 # Volts
-    #     HEMT_I = 15E-3 # Amperes
-    #     HEMT_PWR = HEMT_V * HEMT_I + HEMT_I**2 * HEMT_R
-    #     HEMT = AMPLIFIER(HEMT_GAIN, HEMT_PWR, comp_type_str)
-    #     return HEMT
-    # elif comp_type_str == "HEMT_Nitsuki_9848XD":
-    #     # HEMT Amplifier Instantiation
-    #     # https://nitsuki.com/pdf/microwave_pdf/9848xd.pdf
-    #     HEMT_GAIN = 32 # in dB 
-    #     HEMT_PWR = 10E-3 
-    #     HEMT = AMPLIFIER(HEMT_GAIN, HEMT_PWR, comp_type_str)
-    #     return HEMT
     elif comp_type_str == "SIS":
         # SIS Amplifier Instantiation      
         # Active Power [2025murayamaFabricationEvaluationWaveguide]
@@ -631,34 +450,12 @@ def create_comp_instance(comp_type_str):
         SIS_I = 22E-3 # Amperes
         SIS = AMPLIFIER(SIS_V, SIS_I, comp_type_str)
         return SIS
-    
     elif comp_type_str == "PD":
         # Photodetector Instantiation
         PD = PhotoDetector(Z = 10_000,
                             R = 1,
                             name = comp_type_str)
         return PD
-        
-    elif comp_type_str == "PM_v1":
-        # Assuming Efficiency/Input Optical Power = 1000%/W
-        # PhotoMixer Instantiation (Current Version)
-        PM = PhotoMixer(reflection_coefficient = 0.01, 
-                        input_power_dict = {'1Q': -20.5, '2Q': -18, 'READOUT': -45},
-                        name = comp_type_str)
-        return PM
-    elif comp_type_str == "PM_v2":
-        # PhotoMixer Instantiation (Target Version)
-        PM = PhotoMixer(reflection_coefficient = 0.005, 
-                        input_power_dict = {'1Q': -20.5, '2Q': -18, 'READOUT': -45},
-                        name = comp_type_str)
-        return PM
-    elif comp_type_str == "PM_v3":
-        # PhotoMixer Instantiation (Super Target Version)
-        PM = PhotoMixer(reflection_coefficient = 0.001, 
-                        input_power_dict = {'1Q': -20.5, '2Q': -18, 'READOUT': -45},
-                        name = comp_type_str)
-        return PM
-           
     elif comp_type_str == "BIAS_RESISTOR_4K":
         BIAS_RESISTOR_4K = BIAS_RESISTOR(comp_type_str)
         return BIAS_RESISTOR_4K
@@ -683,22 +480,10 @@ def create_comp_instance(comp_type_str):
     elif comp_type_str == "RESISTOR_2Q_MXC":
         RESISTOR_2Q_MXC = RESISTOR_2Q(comp_type_str)
         return RESISTOR_2Q_MXC
-
-    elif comp_type_str == "JJ_Detector":
-        # Assuming same as SIS-amplifier
-        SIS_V = 305E-6 # Volts (Local oscillator)
-        SIS_I = 22E-3 # Amperes
-        JJ_D_PWR = SIS_V * SIS_I   
-        JJ_D = JJ_Detector(JJ_D_PWR, comp_type_str)
-        return JJ_D
-    elif comp_type_str == "CMOS_CTRL":
-        # Assuming same as SIS-amplifier
-        CMOS_CTRL = CTRL(JJ_D_PWR, comp_type_str)
-        return JJ_D
-        
     else:
         return None
 #####################################################
+        
 def get_comp_config(comp_config_names):
     comp_config = {}
     for cable_type, config in comp_config_names.items():
@@ -714,8 +499,9 @@ def get_comp_config(comp_config_names):
                 comp_config[cable_type][temp_stage] = None
     return comp_config
 #####################################################
+        
 # Electrical Resistivity of Copper
-
+###################################
 def _vander_desc(x, deg):
     """Vandermonde with descending powers: [x^deg, x^(deg-1), ..., 1]."""
     x = np.asarray(x, dtype=float)
@@ -775,6 +561,7 @@ def constrained_polyfit_loglog(T, rho, deg, T_plateau, rho_plateau, T_anchor, rh
     c = sol[:deg + 1]
     return c
 #####################################################    
+
 def cu_electrical_resistivity(T):
     """
     The electrical resistivity (rho) of Copper (ohm-meter) at cryogenic temperatures is shown in https://www.copper.org/resources/properties/cryogenic/
@@ -817,6 +604,7 @@ def cu_electrical_resistivity(T):
 
     return out.item() if out.shape == () else out # ohm-meter
 #####################################################
+
 def mn_electrical_resistivity(T):
     """
     A key feature of Manganin is that its resistance changes very little with temperature even at cryogenic temperatures.
@@ -836,6 +624,7 @@ def mn_electrical_resistivity(T):
 
     return np.polyval(coefficients,T)
 #####################################################
+
 def get_resistance(resistivity_func, length, area, T_lo, T_hi):
     total_int, _ = quad(resistivity_func, T_lo, T_hi)
     average_rho = total_int / (T_hi - T_lo)
