@@ -8,6 +8,8 @@ FRIDGE_NAME: XLD400
 ######################
 QUBIT_FREQ:     "TUNABLE"
 QUBIT_COUPLING: "TUNABLE"  
+MXC_POWER_SCHEME: MXC_TF
+WORKLOAD_TYPE: ESM_CZ
 
 QUBIT_TYPES: # from spreadsheet (inspired by 2017versluisScalableQuantumCircuit)
     DATA : 4 

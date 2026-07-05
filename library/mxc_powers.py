@@ -128,3 +128,10 @@ MXC_FF_FC_81 = {
                       "IDLE" : None,
                        },
     }
+
+MXC_POWERS_DICT = {
+    "MXC_FF_FC":MXC_FF_FC,
+    "MXC_TF":MXC_TF,
+    "MXC_FF_FC_81":MXC_FF_FC_81,
+    
+}

@@ -106,12 +106,14 @@ def add_ohmic_resistors_amp_at_4K(CABLE_CONFIG_NAMES, COMP_CONFIG, fridge):
     name = None
     if CABLE_CONFIG_NAMES['AMP_BIAS']['50K'] is not None:
         if '_cu' in CABLE_CONFIG_NAMES['AMP_BIAS']['50K'].lower():
-            resistance_4K = get_resistance(cu_electrical_resistivity, length_4K, area, T_4K, T_50K)
-            resistance_50K = get_resistance(cu_electrical_resistivity, length_50K, area, T_50K, T_RT)
-            resistance = resistance_50K + resistance_4K # half of ohmic heat from 4K flows to 50K stage
+            resistance_4K_cu = get_resistance(cu_electrical_resistivity, length_4K, area, T_4K, T_50K)
+            resistance_50K_cu = get_resistance(cu_electrical_resistivity, length_50K, area, T_50K, T_RT)
+            resistance = resistance_50K_cu + resistance_4K_cu # half of ohmic heat from 4K flows to 50K stage
             name = "ohmic_Cu"
         if '_mn' in CABLE_CONFIG_NAMES['AMP_BIAS']['50K'].lower():
-            resistance = R_Manganin_50K + R_Manganin_4K # half of ohmic heat from 4K flows to 50K stage
+            resistance_4K_mn = get_resistance(mn_electrical_resistivity, length_4K, area, T_4K, T_50K)
+            resistance_50K_mn = get_resistance(mn_electrical_resistivity, length_4K, area, T_50K, T_RT)
+            resistance = resistance_50K_mn + resistance_4K_mn # half of ohmic heat from 4K flows to 50K stage
             name = "ohmic_Mn"
         if '_ybco' in CABLE_CONFIG_NAMES['AMP_BIAS']['50K'].lower():
             resistance = 0.0
@@ -176,7 +178,7 @@ def add_ohmic_resistors_amp_at_50K(CABLE_CONFIG_NAMES, COMP_CONFIG, fridge):
             resistance = get_resistance(cu_electrical_resistivity, length, area, T_lo, T_hi)
             name = "ohmic_Cu"
         if '_mn' in CABLE_CONFIG_NAMES['AMP_BIAS_50K']['50K'].lower():
-            resistance = R_Manganin_50K
+            resistance = get_resistance(mn_electrical_resistivity, length, area, T_lo, T_hi)
             name = "ohmic_Mn"
         if '_ybco' in CABLE_CONFIG_NAMES['AMP_BIAS_50K']['50K'].lower():
             resistance = 0.0
