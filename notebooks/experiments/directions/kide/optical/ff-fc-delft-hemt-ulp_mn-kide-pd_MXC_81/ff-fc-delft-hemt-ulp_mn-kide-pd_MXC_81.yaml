@@ -8,7 +8,7 @@ FRIDGE_NAME: KIDE
 ######################
 QUBIT_FREQ:     "FIXED"
 QUBIT_COUPLING: "FIXED"  
-MXC_POWER_SCHEME: MXC_FF_FC
+MXC_POWER_SCHEME: MXC_FF_FC_81
 WORKLOAD_TYPE: ESM_CX
 
 QUBIT_TYPES: # from spreadsheet (inspired by 2017versluisScalableQuantumCircuit)
