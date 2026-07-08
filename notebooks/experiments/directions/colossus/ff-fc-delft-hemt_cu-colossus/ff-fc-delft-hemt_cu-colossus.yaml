@@ -52,6 +52,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   Ag
     4K:    Ag
+    2K:    Ag
     Still: Ag
     CP:    Ag
     MXC:   Ag
@@ -73,6 +74,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   Ag
     4K:    Ag
+    2K:    Ag
     Still: Ag
     CP:    Ag
     MXC:   Ag
@@ -80,6 +82,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   Ag
     4K:    Ag
+    2K:    Ag
     Still: Ag
     CP:    Ag
     MXC:   Ag
@@ -87,6 +90,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   Ag
     4K:    Ag
+    2K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
@@ -94,6 +98,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   HEMT_Bias_Cu
     4K:    HEMT_Bias_Cu 
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -101,6 +106,7 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null 
+    2K:    null 
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
@@ -136,6 +142,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    20
+    2K:    0
     Still: 10
     CP:    10
     MXC:   20
@@ -157,6 +164,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    20
+    2K:    0
     Still: 0
     CP:    10
     MXC:   20
@@ -164,6 +172,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    20
+    2K:    0
     Still: 10
     CP:    10
     MXC:   20
@@ -171,6 +180,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
+    2K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -178,6 +188,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
+    2K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -185,6 +196,7 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
+    2K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -197,6 +209,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -218,6 +231,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -225,6 +239,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -232,6 +247,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -239,6 +255,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    HEMT_8G # Ohmic resistor will be added later on
+    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -246,6 +263,7 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
+    2K:    null
     Still: null
     CP:    null
     MXC:   null

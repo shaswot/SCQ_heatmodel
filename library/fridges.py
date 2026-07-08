@@ -1,4 +1,5 @@
 TEMP_STAGES = ['RT', '50K', '4K', 'Still', 'CP', 'MXC']
+TEMP_STAGES_COLOSSUS = ['RT', '50K', '4K', '2K', 'Still', 'CP', 'MXC']
 
 
 XLD400 = { # 2019krinnerEngineeringCryogenicSetups
@@ -89,30 +90,62 @@ XLD1000SL = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     }
 }
 
+# COLOSSUS = { # 2024hollisterUpdateColossusMK
+#     "cooling_power":{ # 2024hollisterUpdateColossusMK
+#     'RT'   : 20E3, # Watts
+#     '50K'  : 9E3, # Watts
+#     '4K'   : 200, # Watts 
+#     'Still': 100e-3, # Watts
+#     'CP'   : 2 * 1.5E-3, # Watts # 2 dilution units
+#     'MXC'  : 10 *30E-6 # Watts # 10 dilution units
+#     },
+    
+#     "temp":{
+#         'RT'   : 300,
+#         '50K'  : 80, # Kelvin
+#         '4K'   : 5, # Kelvin
+#         'Still': 1, # Kelvin
+#         'CP'   : 100E-3, # Kelvin
+#         'MXC'  : 20E-3 # Kelvin
+#     },
+    
+#     "lengths":{ # 2025raicuCryogenicThermalModeling - Table 1
+#         'RT'   : 100, # arbitrary
+#         '50K'  : 24.64, # cm (9.7 inch)
+#         '4K'   : 39.88, # cm (15.7 inch)
+#         'Still': 100.84, # cm (18.2 + 21.5 = 39.7 inch)
+#         'CP'   : 54.61, # cm (21.5 inch)
+#         'MXC'  : 54.61, # cm (21.5 inch)
+#     }
+# }
+
 COLOSSUS = { # 2024hollisterUpdateColossusMK
-    "cooling_power":{ # 2024hollisterUpdateColossusMK
-    'RT'   : 20E3, # Watts
-    '50K'  : 9E3, # Watts
-    '4K'   : 200, # Watts 
-    'Still': 100e-3, # Watts
-    'CP'   : 2 * 1.5E-3, # Watts # 2 dilution units
-    'MXC'  : 10 *30E-6 # Watts # 10 dilution units
-    },
+    "cooling_power":{ 
+        'RT'   : 20E3, # Watts
+        '50K'  : 9E3, # Watts
+        '4K'   : 200, # Watts 
+        '2K'   : 10, # Watts
+        'Still': 100e-3, # Watts
+        'CP'   : 2 * 1.5E-3, # Watts
+        'MXC'  : 10 *30E-6 # Watts
+        },
     
     "temp":{
         'RT'   : 300,
         '50K'  : 80, # Kelvin
         '4K'   : 5, # Kelvin
+        '2K'   : 2, # Kelvin
         'Still': 1, # Kelvin
         'CP'   : 100E-3, # Kelvin
         'MXC'  : 20E-3 # Kelvin
     },
     
-    "lengths":{ # 2025raicuCryogenicThermalModeling - Table 1
+    "lengths":{ 
         'RT'   : 100, # arbitrary
         '50K'  : 24.64, # cm (9.7 inch)
         '4K'   : 39.88, # cm (15.7 inch)
-        'Still': 100.84, # cm (18.2 + 21.5 = 39.7 inch)
+        '2K'   : 54.61, # cm (21.5 inch)
+        'Still': 46.23, # cm (18.2 inch)
         'CP'   : 54.61, # cm (21.5 inch)
         'MXC'  : 54.61, # cm (21.5 inch)
     }
@@ -120,28 +153,31 @@ COLOSSUS = { # 2024hollisterUpdateColossusMK
 
 COLOSSUS_CP = { # 2024hollisterUpdateColossusMK
     "cooling_power":{ 
-    'RT'   : 20E3, # Watts
-    '50K'  : 9E3, # Watts
-    '4K'   : 200, # Watts 
-    'Still': 100e-3, # Watts
-    'CP'   : 4 * 1.5E-3, # Watts
-    'MXC'  : 8 *30E-6 # Watts
+        'RT'   : 20E3, # Watts
+        '50K'  : 9E3, # Watts
+        '4K'   : 200, # Watts 
+        '2K'   : 10, # Watts
+        'Still': 100e-3, # Watts
+        'CP'   : 4 * 1.5E-3, # Watts
+        'MXC'  : 8 *30E-6 # Watts
     },
     
     "temp":{
         'RT'   : 300,
         '50K'  : 80, # Kelvin
         '4K'   : 5, # Kelvin
+        '2K'   : 2, # Kelvin
         'Still': 1, # Kelvin
         'CP'   : 100E-3, # Kelvin
         'MXC'  : 20E-3 # Kelvin
     },
     
-    "lengths":{ # 2025raicuCryogenicThermalModeling - Table 1
+    "lengths":{ 
         'RT'   : 100, # arbitrary
         '50K'  : 24.64, # cm (9.7 inch)
         '4K'   : 39.88, # cm (15.7 inch)
-        'Still': 100.84, # cm (18.2 + 21.5 = 39.7 inch)
+        '2K'   : 54.61, # cm (21.5 inch)
+        'Still': 46.23, # cm (18.2 inch)
         'CP'   : 54.61, # cm (21.5 inch)
         'MXC'  : 54.61, # cm (21.5 inch)
     }
