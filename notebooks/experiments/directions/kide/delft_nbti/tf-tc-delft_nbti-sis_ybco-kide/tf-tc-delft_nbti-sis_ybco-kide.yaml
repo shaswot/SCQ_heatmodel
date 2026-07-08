@@ -53,42 +53,42 @@ CABLE_CONFIG_NAMES:
   DRIVE: # 2024joshiScalingSuperconductingQuantum
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
   FLUX_BIAS:  # [https://delft-circuits.com/product-overview/flux-lines/]
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
   COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/]
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
   PUMP: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
   READOUT_PIN: # 2024joshiScalingSuperconductingQuantum
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
   READOUT_POUT: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
     50K:   Ag
-    4K:    YBCO_rf
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi

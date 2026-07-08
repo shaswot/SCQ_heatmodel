@@ -668,6 +668,7 @@ def create_cable_instance(cable_name):
         cable_class = CABLE_REGISTRY[cable_name]
         return cable_class(cable_name)
     else:
+        print(f"Cable class {cable_name} does not exist.")
         return None
 #####################################################
 
