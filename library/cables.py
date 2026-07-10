@@ -746,6 +746,30 @@ class HEMT_Bias_Cuv2 ():
         # For 3 wires per amplifier
         return result * 3 * (area/(cable_length*1E-2)) #cable length is in cm
 #####################################################
+class HEMT_Bias_Mnv2 ():
+    # PHL due to three strands of AWG 30 Manganin wires
+    # three wires (ground, bias, gate) per one amplifier
+    def __init__(self, name):
+        self.name = name
+        self.diam = 0.2546E-3 # m (AWG30)
+        self.PHL_dict ={
+            'RT'   : None,    # (W/channel); from RT flange to 300K flange
+            '50K'  : True,  # (W/channel); from 300K flange to 50K plate
+            '4K'   : True,  # (W/channel); from 50K plate to 4K plate
+            '2K'   : True,
+            'Still': None,  # (W/channel); from 4K plate to Still plate
+            'CP'   : None,   # (W/channel); from Still plate to CP plate
+            'MXC'  : None # (W/channel); from CP plate to MXC plate
+            }
+    
+    def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
+        # Integrate cu_thermal_conductivity(T) from T_hi to T_lo
+        result, error = quad(mn_thermal_conductivity, T_lo, T_hi)
+        # Get cross sectional area of wire 
+        area = np.pi * (self.diam/2)**2
+        # For 3 wires per amplifier
+        return result * 3 * (area/(cable_length*1E-2)) #cable length is in cm
+#####################################################
 
 CABLE_REGISTRY = {
     "SS_Drive": SS_Drive,
