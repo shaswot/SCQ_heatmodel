@@ -83,6 +83,9 @@ def mn_thermal_conductivity(T):
 def infer_thermal_conductivity(PHL_dict, default_lengths, default_temps):
     thermal_conductivity = {} # W-cm/K
     for temp_stage, PHL in PHL_dict.items():
+        if temp_stage == '2K':
+            thermal_conductivity[temp_stage] = None
+            continue
         # conductive heat load is INVERSELY proportional to length
         # conductive heat load is DIRECTLY proportional to temperature difference
         # conductivity in Watt.cm/K (assuming cross sectional area is fixed)
@@ -638,6 +641,111 @@ class YBCO_rf ():
         # Approximately equal to 5 strips (2*(ground planes with 2xwidth) + signal plane)
         return self.YBCO_conductivity * 5 * (self.area/(cable_length*1E-2)) #cable length is in cm
 #####################################################
+class Agv2():
+    def __init__(self, name):
+
+        self.name = name
+        self.PHL_dict ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
+            'RT'   : None,    # (W/channel); from RT flange to 300K flange
+            '50K'  : 2.7E-3,  # (W/channel); from 300K flange to 50K plate
+            '4K'   : 0.8E-3,  # (W/channel); from 50K plate to 4K plate
+            '2K'   : True,
+            'Still': 5.4E-6,  # (W/channel); from 4K plate to Still plate
+            'CP'   : 290E-9,   # (W/channel); from Still plate to CP plate
+            'MXC'  : 5.9E-9 # (W/channel); from CP plate to MXC plate
+            }
+        self.default_lengths ={ # 2025paluchThermalizationFlexibleMicrowave
+            'RT'   : 32, # arbitrary
+            '50K'  : 32, # cm
+            '4K'   : 32, # cm
+            'Still': 14, # cm
+            'CP'   : 14, # cm
+            'MXC'  : 20 # cm
+            }
+        self.default_temps ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
+            'RT'   : 300,
+            '50K'  : 50, # Kelvin
+            '4K'   : 4, # Kelvin
+            'Still': 0.6, # Kelvin
+            'CP'   : 100E-3, # Kelvin
+            'MXC'  : 10E-3 # Kelvin
+            }
+
+        self.thermal_conductivity = infer_thermal_conductivity(self.PHL_dict, self.default_lengths, self.default_temps)
+        self.thermal_conductivity["2K"] = self.thermal_conductivity["4K"]
+
+    def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
+        temp_diff = T_hi - T_lo 
+        if self.thermal_conductivity[temp_stage] is not None:
+            return self.thermal_conductivity[temp_stage] *  temp_diff /cable_length
+        else:
+            return None
+#####################################################
+class NbTiv2():
+    def __init__(self, name):
+
+        self.name = name
+        self.PHL_dict ={# https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
+            'RT'   : None,    # (W/channel); from RT flange to 300K flange
+            '50K'  : None,  # (W/channel); from 300K flange to 50K plate
+            '4K'   : None,  # (W/channel); from 50K plate to 4K plate
+            '2K'   : True,
+            'Still': 540E-9,  # (W/channel); from 4K plate to Still plate
+            'CP'   : 29E-9 ,  # (W/channel); from Still plate to CP plate
+            'MXC'  : 590E-12 # (W/channel); from CP plate to MXC plate
+            }
+        self.default_lengths ={ # 2025paluchThermalizationFlexibleMicrowave
+            'RT'   : 32, # arbitrary
+            '50K'  : 32, # cm
+            '4K'   : 32, # cm
+            'Still': 14, # cm
+            'CP'   : 14, # cm
+            'MXC'  : 20 # cm
+            }
+
+        self.default_temps ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
+            'RT'   : 300,
+            '50K'  : 50, # Kelvin
+            '4K'   : 4, # Kelvin
+            'Still': 0.6, # Kelvin
+            'CP'   : 100E-3, # Kelvin
+            'MXC'  : 10E-3 # Kelvin
+            }
+
+        self.thermal_conductivity = infer_thermal_conductivity(self.PHL_dict, self.default_lengths, self.default_temps)
+        self.thermal_conductivity["2K"] = self.thermal_conductivity["4K"]
+
+    def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
+        temp_diff = T_hi - T_lo 
+        if self.thermal_conductivity[temp_stage] is not None:
+            return self.thermal_conductivity[temp_stage] *  temp_diff /cable_length
+        else:
+            return None
+#####################################################
+class HEMT_Bias_Cuv2 ():
+    # PHL due to three strands of AWG 30 copper wires
+    # three wires (ground, bias, gate) per one amplifier
+    def __init__(self, name):
+        self.name = name
+        self.diam = 0.2546E-3 # m (AWG30)
+        self.PHL_dict ={
+            'RT'   : None,    # (W/channel); from RT flange to 300K flange
+            '50K'  : True,  # (W/channel); from 300K flange to 50K plate
+            '4K'   : True,  # (W/channel); from 50K plate to 4K plate
+            '2K'   : True,
+            'Still': None,  # (W/channel); from 4K plate to Still plate
+            'CP'   : None,   # (W/channel); from Still plate to CP plate
+            'MXC'  : None # (W/channel); from CP plate to MXC plate
+            }
+
+    def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
+        # Integrate cu_thermal_conductivity(T) from T_hi to T_lo
+        result, error = quad(cu_thermal_conductivity, T_lo, T_hi)
+        # Get cross sectional area of wire 
+        area = np.pi * (self.diam/2)**2
+        # For 3 wires per amplifier
+        return result * 3 * (area/(cable_length*1E-2)) #cable length is in cm
+#####################################################
 
 CABLE_REGISTRY = {
     "SS_Drive": SS_Drive,
@@ -660,6 +768,9 @@ CABLE_REGISTRY = {
     "SIS_v1_5w_Bias_YBCO":SIS_v1_5w_Bias_YBCO,
     "SIS_v1_13w_Bias_Mn":SIS_v1_13w_Bias_Mn,
     "YBCO_rf":YBCO_rf,
+    "Agv2": Agv2,
+    "NbTiv2": NbTiv2,
+    "HEMT_Bias_Cuv2":HEMT_Bias_Cuv2,
 }
 
 #####################################################
@@ -748,3 +859,68 @@ def cable_attenuator_dissipation(cable_attenuator_config, output_power_MXC):
 
     return output_dict
 #####################################################
+def cable_attenuator_dissipationv2(cable_attenuator_config, output_power_MXC):
+    """
+    Outputs the power inputs (or equivalently the power dissipated by the attenuators) at each temperature stage for a given cable. 
+    At 10-20 dB attenuation, almost all (90%-99%) of the input power is dissipated in the attenuator so ** input power = dissipated power **
+
+    Parameters
+    ----------
+    attenuator_config : dict
+        configuration of attenuators in dB: {'RT'   : ATT_RT
+                                             '50K'  : ATT_50K
+                                             '4K'   : ATT_4K, 
+                                             '2K'   : ATT_2K, 
+                                             'Still': ATT_Still, 
+                                             'CP'   : ATT_CP,
+                                             'MXC'  : ATT_MXC}
+        negative values not allowed
+            
+    output_power_MXC in dBm : int
+        the final power level expected at MXC (qubit)
+
+    Returns
+    -------
+    dict
+        dictionary with keys ['RT','50K','4K', 'Still', 'CP', 'MXC'] whose values indicate the power dissipated by the attenuators at each stage in dBm.
+        If no power is dissipated (i.e., the attenuator does not exist), then it returns None.
+    """
+    # Check if attenuations are all non-negative
+    try:
+        all(value >= 0 for value in cable_attenuator_config.values())
+    except:
+        print("Attenuator values must always be non-negative")
+
+    # Initialize output dictionary
+    output_dict = { 'RT'   : None,
+                    '50K'  : None,        
+                    '4K'   : None, 
+                    '2K'   : None, 
+                    'Still': None, 
+                    'CP'   : None,
+                    'MXC'  : None}
+
+    # When output_power_MXC is not given
+    if output_power_MXC is None:
+        return output_dict
+
+    # Given the output power, calculate the input power required
+    total_line_attenuation = sum(value for value in cable_attenuator_config.values())
+    input_power            = output_power_MXC + total_line_attenuation
+
+    # Calculate the power dissipated at each stage
+    remaining_power = input_power
+    for key in cable_attenuator_config.keys():
+        if cable_attenuator_config[key] > 0: # only positive values (in dBm allowed)
+            output_dict[key] = remaining_power
+            remaining_power -= cable_attenuator_config[key]
+        else:
+            output_dict[key] = None
+
+    # Check if the final power matches the desired output power value
+    try:
+        remaining_power - cable_attenuator_config['MXC'] == output_power_MXC
+    except:
+        print("Final power level does not match the desired value.")
+
+    return output_dict

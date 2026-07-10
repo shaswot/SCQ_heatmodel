@@ -80,7 +80,7 @@ style_map = {
     # =====================
     ('DC_TERMINAL', 'PASSIVE', 'IDLE'): {'color': '#1A1A1A', 'hatch': ''},       # near-black
 }
-
+###########################################################
 def get_pq_dict(THL_DF,cooling_power_budget,QUBIT_GROUP_SIZE):
     # Calculate how many qubits are supported at each temperature stage
 
@@ -114,7 +114,7 @@ def get_pq_dict(THL_DF,cooling_power_budget,QUBIT_GROUP_SIZE):
 
     return physical_qubits_dict
     
-
+###########################################################
 def plot_heat_load(df_plot, title, config_name, physical_qubits_dict, legend_bbox=(1.0, 1.0)):
     
     # # Change amplifier name and ohmic resistor to generic labels
@@ -388,3 +388,175 @@ def get_MUX_RATIO(OPERATIONS, DRIVE_MUX, READIN_MUX, READOUT_GROUP_SIZE):
     mux_ratio["READOUT"] = 1 / (READIN_MUX * READOUT_GROUP_SIZE)
 
     return mux_ratio
+#######################################################################
+def get_pq_dictv2(THL_DF,cooling_power_budget,QUBIT_GROUP_SIZE):
+    # Calculate how many qubits are supported at each temperature stage
+
+    # Cooling power at each temperature stage
+    cooling_powers = np.array([cooling_power_budget[temp_stage] for temp_stage in ['50K','4K', '2K', 'Still', 'CP', 'MXC']])
+    
+    # Total heat load at each temperature stage
+    ALL_DF = THL_DF[['50K', '4K', '2K', 'Still', 'CP', 'MXC']].copy()
+    ALL_DF.loc["Total"] = ALL_DF.sum()
+    total_load = np.array(ALL_DF.loc["Total"].tolist()) # includes heat load due to coupler qubits if any
+    
+    # No. of qubits supported by each temperature stage
+    possible_groups = np.floor(cooling_powers/total_load).astype(int)
+    possible_physical_qubits = possible_groups * QUBIT_GROUP_SIZE
+    physical_qubits_dict = dict(zip(['50K', '4K', '2K',  'Still', 'CP', 'MXC'], possible_physical_qubits))
+    print("The number of qubits supported at each temperature stage is:")
+    print(physical_qubits_dict)
+    
+    # Display the bottleneck temperature stage
+    bottleneck = min(physical_qubits_dict, key= physical_qubits_dict.get)
+    print(f"\nThe bottleneck is at: {bottleneck}")
+    
+    max_no_of_groups = min(possible_groups)
+    max_heat_loads = total_load * max_no_of_groups
+    frac_of_cooling_power = np.round(max_heat_loads/cooling_powers * 100, 2)
+    frac_of_cooling_power_dict = dict(zip(['50K','4K', '2K' ,'Still', 'CP', 'MXC'], frac_of_cooling_power))
+    
+    max_supported_qubits = max_no_of_groups * QUBIT_GROUP_SIZE
+    print(f"{max_supported_qubits=}")
+    print(frac_of_cooling_power_dict)
+
+    return physical_qubits_dict
+#######################################################################    
+def plot_heat_loadv2(df_plot, title, config_name, physical_qubits_dict, legend_bbox=(1.0, 1.0)):
+    
+    # # Change amplifier name and ohmic resistor to generic labels
+    # --- Generate new column labels ---
+    renamed_labels = [
+        (a, 'AMP_OHMIC', c) if a == 'AMP_BIAS' and c == 'IDLE' and 'ohmic' in b.lower()
+        else (a, 'PASSIVE', c)  if a == 'AMP_BIAS' and b == 'PASSIVE' and c == 'IDLE'
+        else (a, 'AMP', c)  if a == 'AMP_BIAS' and c == 'IDLE'
+        else (a, b, c)
+        for a, b, c in df_plot.columns
+    ]
+    
+    # --- Apply the renamed columns to df_plot ---
+    df_plot.columns = pd.MultiIndex.from_tuples(renamed_labels, names=df_plot.columns.names)
+
+    renamed_labels = [
+        (a, 'AMP_OHMIC', c) if a == 'AMP_BIAS_50K' and c == 'IDLE' and 'ohmic' in b.lower()
+        else (a, 'PASSIVE', c)  if a == 'AMP_BIAS_50K' and b == 'PASSIVE' and c == 'IDLE'
+        else (a, 'AMP', c)  if a == 'AMP_BIAS_50K' and c == 'IDLE'
+        else (a, b, c)
+        for a, b, c in df_plot.columns
+    ]
+    
+    # --- Apply the renamed columns to df_plot ---
+    df_plot.columns = pd.MultiIndex.from_tuples(renamed_labels, names=df_plot.columns.names)
+    
+    # 1) Decide the plotting order of stacks (columns)
+    # Reorder columns: PASSIVE first
+    original_columns = df_plot.columns.tolist()
+    passive_cols = [col for col in df_plot.columns if col[1] == 'PASSIVE']
+    active_cols  = [col for col in df_plot.columns if col[1] != 'PASSIVE']
+    reordered_columns = passive_cols + active_cols
+    
+    # Reorder df_plot accordingly
+    df_plot = df_plot[reordered_columns].copy()
+    cols = list(df_plot.columns)
+    
+    # Index: temperature stages (e.g., "4K", "Still", "CP", "MXC")
+    # Columns: MultiIndex with levels (Cable, Component, Operation)
+    
+    # 2) (Optional but helpful) ensure the columns are a proper 3-level MultiIndex
+    # If they already are, this does nothing.
+    if not isinstance(df_plot.columns, pd.MultiIndex) or df_plot.columns.nlevels != 3:
+        raise ValueError("dataframe columns must be a 3-level MultiIndex: (Cable, Component, Operation)")
+        
+    # 4) Define fallbacks (only used if a stack tuple isn’t in style_map)
+    # fallback_colors = plt.cm.tab20.colors  # a nice, long qualitative palette
+    # fallback_hatches = ['/', '\\', 'x', '-', '+', 'o', 'O', '.', '*']  # repeats cyclically
+    fallback_color = 'white' 
+    fallback_hatch = '//'   
+    
+    # 5) X positions and labels (temperature stages)
+    x = np.arange(len(df_plot.index))
+    # xticklabels = df_plot.index.astype(str)
+    # xticklabels = ["4K", "Still (1K)", "CP (100 mK)", "MXC (10 mK)" ]
+    xticklabels = ["50K", "4K", "2K", "Still", "CP", "MXC" ]
+    
+    # 6) Create the figure/axes
+    # IEEE TQE Guidelines
+    # Single column: 3.5" (wide) x 8.5" (height)
+    # Double column: 7.16" (wide) x 8.5" (height)
+    fig, ax = plt.subplots(figsize=(7.16, 3))
+    
+    # 7) Build the stacked bars
+    bottom = np.zeros(len(x), dtype=float)
+    
+    for i, col in enumerate(cols):
+        values = df_plot[col].astype(float).values
+    
+        # pull style from style_map if present, else fallback
+        style = style_map.get(col, {})
+        color = style.get('color', fallback_color)
+        hatch = style.get('hatch', fallback_hatch)
+    
+        # readable label in legend
+        label = f"{col[0]} | {col[1]} | {col[2]}"
+    
+        bars = ax.bar(
+            x,
+            values,
+            bottom=bottom,
+            label=label,
+            color=color,
+            edgecolor='black',
+            linewidth=0.4
+        )
+        # apply hatch to each rectangle
+        for b in bars:
+            b.set_hatch(hatch)
+    
+        bottom += values  # update stack baseline
+
+    # Display no. of supported qubits on top of the bar
+    possible_physical_qubits = list(physical_qubits_dict.values())
+    totals = df_plot.sum(axis=1)  # Sum over column. Get bar height
+    for i, total in enumerate(totals):
+        ax.text(i, total, f'{possible_physical_qubits[i]}', ha='center', va='bottom', fontproperties=text_font)
+    
+    # Draw horizantal line at y=1
+    ax.axhline(y=1, color='k', linestyle='--',linewidth=0.6)
+    
+    # 8) Axis cosmetics
+    # Set titles 
+    ax.set_title(title, fontproperties=title_font)
+    ax.set_xlabel("Temperature Stage", fontproperties=axis_label_font)
+    ax.set_ylabel("Normalized Heat Load", fontproperties=axis_label_font)
+    ax.set_xticks(x)
+    ax.set_xticklabels(xticklabels, fontproperties=tick_label_font, rotation=0)
+    for label in ax.get_yticklabels() :
+        label.set_fontproperties(tick_label_font)
+    ax.set_ylim(0, 1.1) # Set max y-value to be slightly higher than the tallest bar
+    
+    # 9) Legend: shrink and place outside
+    ax.legend(ncol=1, 
+              bbox_to_anchor=legend_bbox, 
+              loc='upper left',
+              prop=legend_font,
+              frameon=False,
+              borderaxespad=0.)
+    
+    ax.margins(x=0.02)
+    plt.tight_layout()
+    plt.savefig(f"./{config_name}_THL.png",dpi=600)
+    plt.show()
+
+    # Save plot dataframe as pickle file
+    df_plot_saved = df_plot.copy()
+    df_plot_saved["Total"] = totals
+    df_plot_saved.to_pickle(config_name + ".pkl")
+
+    # Save no. of physical qubits as pickle file
+    df_pq = pd.DataFrame([physical_qubits_dict], index=["PQ"])
+    df_pq.to_pickle("PQ_"+config_name+".pkl")
+
+    # Return the plot dataframe
+    return df_plot_saved
+
+#######################################################################

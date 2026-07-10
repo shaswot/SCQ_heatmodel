@@ -50,18 +50,18 @@ CABLE_TYPES:
 CABLE_CONFIG_NAMES: 
   DRIVE: # 2024joshiScalingSuperconductingQuantum
     RT:    null
-    50K:   Ag
-    4K:    Ag
-    2K:    Ag
-    Still: Ag
-    CP:    Ag
-    MXC:   Ag
+    50K:   Agv2
+    4K:    Agv2
+    2K:    Agv2
+    Still: Agv2
+    CP:    Agv2
+    MXC:   Agv2
   # FLUX_BIAS:  # [https://delft-circuits.com/product-overview/flux-lines/]
   #   RT:    null
   #   50K:   Ag
   #   4K:    Ag
-  #   Still: NbTi
-  #   CP:    NbTi
+  #   Still: NbTiv2
+  #   CP:    NbTiv2
   #   MXC:   NbTi
   # COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/]
   #   RT:    null
@@ -72,32 +72,32 @@ CABLE_CONFIG_NAMES:
   #   MXC:   NbTi
   PUMP: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
-    50K:   Ag
-    4K:    Ag
-    2K:    Ag
-    Still: Ag
-    CP:    Ag
-    MXC:   Ag
+    50K:   Agv2
+    4K:    Agv2
+    2K:    Agv2
+    Still: Agv2
+    CP:    Agv2
+    MXC:   Agv2
   READOUT_PIN: # 2024joshiScalingSuperconductingQuantum
     RT:    null
-    50K:   Ag
-    4K:    Ag
-    2K:    Ag
-    Still: Ag
-    CP:    Ag
-    MXC:   Ag
+    50K:   Agv2
+    4K:    Agv2
+    2K:    Agv2
+    Still: Agv2
+    CP:    Agv2
+    MXC:   Agv2
   READOUT_POUT: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
-    50K:   Ag
-    4K:    Ag
-    2K:    Ag
-    Still: NbTi
-    CP:    NbTi
-    MXC:   NbTi
+    50K:   Agv2
+    4K:    Agv2
+    2K:    Agv2
+    Still: NbTiv2
+    CP:    NbTiv2
+    MXC:   NbTiv2
   AMP_BIAS:  # DC Bias Lines
     RT:    null
-    50K:   HEMT_Bias_Cu
-    4K:    HEMT_Bias_Cu 
+    50K:   HEMT_Bias_Cuv2
+    4K:    HEMT_Bias_Cuv2
     2K:    null
     Still: null
     CP:    null
@@ -107,9 +107,9 @@ CABLE_CONFIG_NAMES:
     50K:   null
     4K:    null 
     2K:    null 
-    Still: NbTi
-    CP:    NbTi
-    MXC:   NbTi
+    Still: NbTiv2
+    CP:    NbTiv2
+    MXC:   NbTiv2
 
 ###################
 # Activation Matrix
