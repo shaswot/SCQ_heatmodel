@@ -1,20 +1,20 @@
 ######################
 # Fridge Configuration
 ######################
-FRIDGE_NAME: COLOSSUS_CP
+FRIDGE_NAME: KIDE
 
 ######################
 # Qubit Configuration
 ######################
-QUBIT_FREQ:     "TUNABLE"
-QUBIT_COUPLING: "TUNABLE"
-MXC_POWER_SCHEME: MXC_TF
-WORKLOAD_TYPE: ESM_CZ
+QUBIT_FREQ:     "FIXED"
+QUBIT_COUPLING: "FIXED"  
+MXC_POWER_SCHEME: MXC_FF_FC
+WORKLOAD_TYPE: ESM_CX
 
 QUBIT_TYPES: # from spreadsheet (inspired by 2017versluisScalableQuantumCircuit)
     DATA : 4 
     ANCILLA: 4
-    COUPLER: 14 # Refer Explanations no. 5
+    # COUPLER: 14 # Refer Explanations no. 5
 
 OPERATIONS:
     - 1Q
@@ -31,77 +31,77 @@ READOUT_GROUP_SIZE: 4 # [2025springFastMultiplexedSuperconductingQubit]
 ######################
 CABLE_TYPES:
   - DRIVE    # Single + Two Qubit Gate Operations
-  - FLUX_BIAS # Qubit Biasing Line
-  - COUPLER     # 2Q operations
+  # - FLUX_BIAS # Qubit Biasing Line
+  # - COUPLER     # 2Q operations
   - PUMP
   - READOUT_PIN
   - READOUT_POUT
   - AMP_BIAS  # Amplifier Biasing Line
+  - AMP_BIAS_50K  # Amplifier Biasing Line
   - DC_TERMINAL # Directional Coupler termination relocated to 4K
 
-DC_PARAMS:
-    R_4K: 1249.875
-    R_Still: 0.0
-    R_CP: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
-    R_MXC: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
-    I_BIAS: 0.4E-3
-    I_2Q: 0.4E-3
+# DC_PARAMS:
+#     R_4K: 0.14
+#     R_CP: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
+#     R_MXC: 0.0 # Assuming superconducting NbTi lines below 4K for FLUX_BIAS
+#     I_BIAS: 1.0E-3
+#     I_2Q: 0.0 #0.4E-3
 
 
 CABLE_CONFIG_NAMES: 
   DRIVE: # 2024joshiScalingSuperconductingQuantum
     RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
-    Still: Agv2
-    CP:    Agv2
-    MXC:   Agv2
-  FLUX_BIAS:  # [https://delft-circuits.com/product-overview/flux-lines/]
-    RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
-    Still: NbTiv2
-    CP:    NbTiv2
-    MXC:   NbTi
-  COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/]
-    RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
+    50K:   Ag
+    4K:    Ag
     Still: NbTi
     CP:    NbTi
     MXC:   NbTi
+  # FLUX_BIAS:  # [https://delft-circuits.com/product-overview/flux-lines/]
+  #   RT:    null
+  #   50K:   Ag
+  #   4K:    Ag
+  #   Still: NbTi
+  #   CP:    NbTi
+  #   MXC:   NbTi
+  # COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/]
+  #   RT:    null
+  #   50K:   Ag
+  #   4K:    Ag
+  #   Still: NbTi
+  #   CP:    NbTi
+  #   MXC:   NbTi
   PUMP: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
-    Still: Agv2
-    CP:    Agv2
-    MXC:   Agv2
+    50K:   Ag
+    4K:    Ag
+    Still: NbTi
+    CP:    NbTi
+    MXC:   NbTi
   READOUT_PIN: # 2024joshiScalingSuperconductingQuantum
     RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
-    Still: Agv2
-    CP:    Agv2
-    MXC:   Agv2
+    50K:   Ag
+    4K:    Ag
+    Still: NbTi
+    CP:    NbTi
+    MXC:   NbTi
   READOUT_POUT: # [https://delft-circuits.com/product-overview/read-out-dc-lines/]
     RT:    null
-    50K:   Agv2
-    4K:    Agv2
-    2K:    Agv2
-    Still: NbTiv2
-    CP:    NbTiv2
-    MXC:   NbTiv2
+    50K:   Ag
+    4K:    Ag
+    Still: NbTi
+    CP:    NbTi
+    MXC:   NbTi
   AMP_BIAS:  # DC Bias Lines
     RT:    null
-    50K:   HEMT_Bias_Mnv2
-    4K:    HEMT_Bias_Mnv2
-    2K:    null
+    50K:   ULP_HEMT_Bias_Mn
+    4K:    ULP_HEMT_Bias_Mn 
+    Still: null
+    CP:    null
+    MXC:   null
+  AMP_BIAS_50K:  # DC Bias Lines
+    RT:    null
+    50K:   HEMT_Bias_Mn
+    4K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -109,10 +109,9 @@ CABLE_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null 
-    2K:    null 
-    Still: NbTiv2
-    CP:    NbTiv2
-    MXC:   NbTiv2
+    Still: NbTi
+    CP:    NbTi
+    MXC:   NbTi
 
 ###################
 # Activation Matrix
@@ -122,10 +121,10 @@ ACTIVATION_MATRIX:
     DRIVE:
         - 1Q
         - 2Q
-    FLUX_BIAS: # always ON
-        - IDLE
-    COUPLER: 
-        - 2Q
+    # FLUX_BIAS: # always ON
+    #     - IDLE
+    # COUPLER: 
+    #     - 2Q
     PUMP:
         - READOUT
     READOUT_PIN:
@@ -133,6 +132,8 @@ ACTIVATION_MATRIX:
     READOUT_POUT:
         - READOUT
     AMP_BIAS: # always ON
+        - IDLE
+    AMP_BIAS_50K: # always ON
         - IDLE
     DC_TERMINAL: # always ON
         - IDLE
@@ -145,31 +146,27 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    20
-    2K:    0
     Still: 10
     CP:    10
     MXC:   20
-  FLUX_BIAS: 
-    RT:    0
-    50K:   0
-    4K:    0 # modelling 20dB attenuation as ohmic resistor
-    2K:    0
-    Still: 0
-    CP:    0
-    MXC:   0
-  COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/, 
-    RT:    0
-    50K:   0
-    4K:    0 # modelling 20dB attenuation as ohmic resistor
-    2K:    0
-    Still: 0
-    CP:    0  
-    MXC:   0
+  # FLUX_BIAS: 
+  #   RT:    0
+  #   50K:   0
+  #   4K:    0 # modelling 20dB attenuation as ohmic resistor
+  #   Still: 0
+  #   CP:    0
+  #   MXC:   0
+  # COUPLER: # [https://delft-circuits.com/product-overview/flux-lines/, 
+  #   RT:    0
+  #   50K:   0
+  #   4K:    0 # modelling 20dB attenuation as ohmic resistor
+  #   Still: 0
+  #   CP:    0  
+  #   MXC:   0
   PUMP: # [2019krinnerEngineeringCryogenicSetups, 2024gunyhoSingleshotReadoutSuperconducting]
     RT:    0
     50K:   0
     4K:    20
-    2K:    0
     Still: 0
     CP:    10
     MXC:   20
@@ -177,7 +174,6 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    20
-    2K:    0
     Still: 10
     CP:    10
     MXC:   20
@@ -185,7 +181,6 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
-    2K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -193,7 +188,13 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
-    2K:    0
+    Still: 0
+    CP:    0
+    MXC:   0
+  AMP_BIAS_50K: 
+    RT:    0
+    50K:   0
+    4K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -201,7 +202,6 @@ ATT_CONFIG:
     RT:    0
     50K:   0
     4K:    0
-    2K:    0
     Still: 0
     CP:    0
     MXC:   0
@@ -214,31 +214,27 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
-    2K:    null
     Still: null
     CP:    null
     MXC:   null
-  FLUX_BIAS:
-    RT:    null
-    50K:   null
-    4K:    BIAS_RESISTOR_4K
-    2K:    null
-    Still: BIAS_RESISTOR_Still
-    CP:    BIAS_RESISTOR_CP  # modeling the dissipation at CP due to cable resistance as a component
-    MXC:   BIAS_RESISTOR_MXC # modeling the dissipation at MXC due to cable resistance as a component
-  COUPLER:
-    RT:    null
-    50K:   null
-    4K:    RESISTOR_2Q_4K
-    2K:    null
-    Still: RESISTOR_2Q_Still
-    CP:    RESISTOR_2Q_CP
-    MXC:   RESISTOR_2Q_MXC
+  # FLUX_BIAS:
+  #   RT:    null
+  #   50K:   null
+  #   4K:    BIAS_RESISTOR_4K
+  #   Still: null
+  #   CP:    BIAS_RESISTOR_CP  # modeling the dissipation at CP due to cable resistance as a component
+  #   MXC:   BIAS_RESISTOR_MXC # modeling the dissipation at MXC due to cable resistance as a component
+  # COUPLER:
+  #   RT:    null
+  #   50K:   null
+  #   4K:    RESISTOR_2Q_4K
+  #   Still: null
+  #   CP:    RESISTOR_2Q_CP
+  #   MXC:   RESISTOR_2Q_MXC
   PUMP:
     RT:    null
     50K:   null
     4K:    null
-    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -246,7 +242,6 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
-    2K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -254,15 +249,20 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
-    2K:    null
     Still: null
     CP:    null
     MXC:   null
   AMP_BIAS:
     RT:    null
     50K:   null
-    4K:    HEMT_8G # Ohmic resistor will be added later on
-    2K:    null
+    4K:    ULP_HEMT # Ohmic resistor will be added later on
+    Still: null
+    CP:    null
+    MXC:   null
+  AMP_BIAS_50K:
+    RT:    null
+    50K:   HEMT_8G # Ohmic resistor will be added later on
+    4K:    null
     Still: null
     CP:    null
     MXC:   null
@@ -270,7 +270,6 @@ COMP_CONFIG_NAMES:
     RT:    null
     50K:   null
     4K:    null
-    2K:    null
     Still: null
     CP:    null
     MXC:   null
