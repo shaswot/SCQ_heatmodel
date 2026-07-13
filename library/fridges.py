@@ -45,7 +45,7 @@ KIDE = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     "temp":{
         'RT'   : 300,
         '50K'  : 40, # Kelvin
-        '4K'   : 3.5, # Kelvin
+        '4K'   : 4.5, # Kelvin
         'Still': 1.2, # Kelvin
         'CP'   : 200E-3, # Kelvin
         'MXC'  : 20E-3 # Kelvin
