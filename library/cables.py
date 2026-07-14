@@ -79,6 +79,21 @@ def mn_thermal_conductivity(T):
 
     return np.polyval(coefficients, T) # W per m-Kelvin 
 #####################################################
+def sc_085_nbti_conductivity(T):
+    # SC-085-NbTi Cable Thermal Conductivity Coefficient 
+    # Based on data from https://www.coax.co.jp/wcaxp/wp-content/uploads/2022/10/Cryogenic_catalogue_2022.pdf
+    
+    t_data = np.array([1, 1.5, 2, 3, 4, 5])
+    g_data = np.array([5.2E-7, 1E-6, 1.4E-6, 2.7E-6, 4.4E-6, 6.3E-6]) # W.cm/K
+    log_t_data = np.log10(t_data)
+    log_g_data = np.log10(g_data)
+
+    coefficients = np.polyfit(log_t_data, log_g_data, 2)
+    
+    log_T = np.log10(T)
+    log_y_pred = np.polyval(coefficients, log_T)
+    return 10**log_y_pred # W.cm/Kelvin 
+#####################################################
 
 def infer_thermal_conductivity(PHL_dict, default_lengths, default_temps):
     thermal_conductivity = {} # W-cm/K
@@ -179,8 +194,8 @@ class NbTi_coax():
             '50K'  : None,  # (W/channel); from 300K flange to 50K plate
             '4K'   : None,  # (W/channel); from 50K plate to 4K plate
             'Still': 1E-6,  # Fig.1 [2019krinnerEngineeringCryogenicSetups]
-            'CP'   : 180E-9,   # (W/channel); from Still plate to CP plate
-            'MXC'  : 2E-9 # (W/channel); from CP plate to MXC plate
+            'CP'   : 0.3E-6,   # (W/channel); Table 2 [2019krinnerEngineeringCryogenicSetups]
+            'MXC'  : 20E-9 # (W/channel);  Table 2 [2019krinnerEngineeringCryogenicSetups]
             }
 
         self.default_lengths = FRIDGE_LIBRARY["XLD400"]["lengths"]  #[2019krinnerEngineeringCryogenicSetups]
@@ -196,7 +211,26 @@ class NbTi_coax():
         else:
             return None
 #####################################################
-
+class SC_086_NbTi_coax():
+    def __init__(self, name):
+        self.name = name
+        self.PHL_dict ={
+            'RT'   : None,    # (W/channel); from RT flange to 300K flange
+            '50K'  : None,  # (W/channel); from 300K flange to 50K plate
+            '4K'   : None,  # (W/channel); from 50K plate to 4K plate
+            'Still': True,  # (W/channel); from 4K plate to Still plate
+            'CP'   : True,   # (W/channel); from Still plate to CP plate
+            'MXC'  : True # (W/channel); from CP plate to MXC plate
+            }
+    
+    def get_PHL(self, temp_stage, cable_length_cm, T_lo, T_hi): # cable lengths in cm
+        if self.PHL_dict[temp_stage] is None:
+            return None
+        else:
+            # Integrate sc_085_nbti_conductivity(T) from T_hi to T_lo
+            result, error = quad(sc_085_nbti_conductivity, T_lo, T_hi) # W.cm/Kelvin 
+            return result / (cable_length_cm) #cable length is in cm
+#####################################################
 class Cu_35_bias():
     def __init__(self, name):
         ####### 2019krinnerEngineeringCryogenicSetups - Fig 1 ##########
@@ -775,6 +809,7 @@ CABLE_REGISTRY = {
     "SS_Drive": SS_Drive,
     "SS_Flux": SS_Flux,
     "NbTi_coax": NbTi_coax,
+    "SC_086_NbTi_coax": SC_086_NbTi_coax,
     "GHOST": GHOST,
     "Cu_35_bias": Cu_35_bias,
     "Ag": Ag,
