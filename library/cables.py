@@ -83,8 +83,8 @@ def sc_085_nbti_conductivity(T):
     # SC-085-NbTi Cable Thermal Conductivity Coefficient 
     # Based on data from https://www.coax.co.jp/wcaxp/wp-content/uploads/2022/10/Cryogenic_catalogue_2022.pdf
     
-    t_data = np.array([1, 1.5, 2, 3, 4, 5])
-    g_data = np.array([5.2E-7, 1E-6, 1.4E-6, 2.7E-6, 4.4E-6, 6.3E-6]) * 1E-2 # W.cm /Kelvin * 1E2 ->  W.m /Kelvin
+    t_data = np.array([0.5, 1, 1.5, 2, 3, 4, 5])
+    g_data = np.array([1.4E-7, 5.2E-7, 1E-6, 1.4E-6, 2.7E-6, 4.4E-6, 6.3E-6]) * 1E-2 # W.cm /Kelvin * 1E2 ->  W.m /Kelvin
     log_t_data = np.log10(t_data)
     log_g_data = np.log10(g_data)
 
