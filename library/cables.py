@@ -84,15 +84,15 @@ def sc_085_nbti_conductivity(T):
     # Based on data from https://www.coax.co.jp/wcaxp/wp-content/uploads/2022/10/Cryogenic_catalogue_2022.pdf
     
     t_data = np.array([1, 1.5, 2, 3, 4, 5])
-    g_data = np.array([5.2E-7, 1E-6, 1.4E-6, 2.7E-6, 4.4E-6, 6.3E-6]) # W.cm/K
+    g_data = np.array([5.2E-7, 1E-6, 1.4E-6, 2.7E-6, 4.4E-6, 6.3E-6]) * 1E-2 # W.cm /Kelvin * 1E2 ->  W.m /Kelvin
     log_t_data = np.log10(t_data)
     log_g_data = np.log10(g_data)
 
-    coefficients = np.polyfit(log_t_data, log_g_data, 2)
+    coefficients = np.polyfit(log_t_data, log_g_data, 1)
     
     log_T = np.log10(T)
     log_y_pred = np.polyval(coefficients, log_T)
-    return 10**log_y_pred # W.cm/Kelvin 
+    return 10**log_y_pred # W.m/Kelvin 
 #####################################################
 
 def infer_thermal_conductivity(PHL_dict, default_lengths, default_temps):
@@ -229,7 +229,7 @@ class SC_086_NbTi_coax():
         else:
             # Integrate sc_085_nbti_conductivity(T) from T_hi to T_lo
             result, error = quad(sc_085_nbti_conductivity, T_lo, T_hi) # W.cm/Kelvin 
-            return result / (cable_length_cm) #cable length is in cm
+            return result / (cable_length_cm*1E-2) # convert cable length to m
 #####################################################
 class Cu_35_bias():
     def __init__(self, name):
