@@ -115,7 +115,7 @@ def infer_thermal_conductivity(PHL_dict, default_lengths, default_temps):
             thermal_conductivity[temp_stage] = PHL_dict[temp_stage] * default_lengths[temp_stage] / (T_hi - T_lo)
         else:
             thermal_conductivity[temp_stage] = None
-    return thermal_conductivity
+    return thermal_conductivity # W-cm/K
 #####################################################
 
 class SS_Drive():
@@ -264,34 +264,35 @@ class Cu_35_bias():
 
 class Ag():
     def __init__(self, name):
+        # http://photonteck.com/uploads/20241109/b3531c2c55a53a8e034ba1e998f3f7ee.pdf (Pg. 18)
 
         self.name = name
-        self.PHL_dict ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
+        self.PHL_dict ={ 
             'RT'   : None,    # (W/channel); from RT flange to 300K flange
             '50K'  : 2.7E-3,  # (W/channel); from 300K flange to 50K plate
-            '4K'   : 0.8E-3,  # (W/channel); from 50K plate to 4K plate
-            'Still': 5.4E-6,  # (W/channel); from 4K plate to Still plate
-            'CP'   : 290E-9,   # (W/channel); from Still plate to CP plate
-            'MXC'  : 5.9E-9 # (W/channel); from CP plate to MXC plate
+            '4K'   : 760E-6,  # (W/channel); from 50K plate to 4K plate
+            'Still': 4.4E-6,  # (W/channel); from 4K plate to Still plate
+            'CP'   : 200E-9,   # (W/channel); from Still plate to CP plate
+            'MXC'  : 5E-9 # (W/channel); from CP plate to MXC plate
             }
-        self.default_lengths ={ # 2025paluchThermalizationFlexibleMicrowave
-            'RT'   : 32, # arbitrary
-            '50K'  : 32, # cm
-            '4K'   : 32, # cm
-            'Still': 14, # cm
-            'CP'   : 14, # cm
+        self.default_lengths ={ 
+            'RT'   : 200, # arbitrary
+            '50K'  : 20, # cm
+            '4K'   : 20, # cm
+            'Still': 20, # cm
+            'CP'   : 20, # cm
             'MXC'  : 20 # cm
             }
-        self.default_temps ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
-            'RT'   : 300,
+        self.default_temps ={ 
+            'RT'   : 293,
             '50K'  : 50, # Kelvin
             '4K'   : 4, # Kelvin
-            'Still': 0.6, # Kelvin
+            'Still': 1, # Kelvin
             'CP'   : 100E-3, # Kelvin
             'MXC'  : 10E-3 # Kelvin
             }
 
-        self.thermal_conductivity = infer_thermal_conductivity(self.PHL_dict, self.default_lengths, self.default_temps)
+        self.thermal_conductivity = infer_thermal_conductivity(self.PHL_dict, self.default_lengths, self.default_temps) # W-cm/K
 
     def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
         temp_diff = T_hi - T_lo 
@@ -300,7 +301,6 @@ class Ag():
         else:
             return None
 #####################################################
-
 class NbTi():
     def __init__(self, name):
 
@@ -309,29 +309,30 @@ class NbTi():
             'RT'   : None,    # (W/channel); from RT flange to 300K flange
             '50K'  : None,  # (W/channel); from 300K flange to 50K plate
             '4K'   : None,  # (W/channel); from 50K plate to 4K plate
-            'Still': 540E-9,  # (W/channel); from 4K plate to Still plate
-            'CP'   : 29E-9 ,  # (W/channel); from Still plate to CP plate
-            'MXC'  : 590E-12 # (W/channel); from CP plate to MXC plate
-            }
-        self.default_lengths ={ # 2025paluchThermalizationFlexibleMicrowave
-            'RT'   : 32, # arbitrary
-            '50K'  : 32, # cm
-            '4K'   : 32, # cm
-            'Still': 14, # cm
-            'CP'   : 14, # cm
-            'MXC'  : 20 # cm
+            'Still': True,  # (W/channel); from 4K plate to Still plate
+            'CP'   : True ,  # (W/channel); from Still plate to CP plate
+            'MXC'  : True # (W/channel); from CP plate to MXC plate
             }
 
-        self.default_temps ={ # https://delft-circuits.com/wp-content/uploads/2026/03/Brochure_2026_Delft_Circuits.pdf
-            'RT'   : 300,
-            '50K'  : 50, # Kelvin
-            '4K'   : 4, # Kelvin
-            'Still': 0.6, # Kelvin
-            'CP'   : 100E-3, # Kelvin
-            'MXC'  : 10E-3 # Kelvin
-            }
+        # First get the linear thermal conductivity of Ag stripline
+        Ag_cable = Ag("Ag")
+        Ag_cable.thermal_conductivity # W-cm/K
 
-        self.thermal_conductivity = infer_thermal_conductivity(self.PHL_dict, self.default_lengths, self.default_temps)
+        # Initialize the dictionary to None values
+        self.thermal_conductivity = {
+            'RT': None,
+            '50K': None,
+            '4K': None,
+            'Still': None,
+            'CP': None,
+            'MXC': None
+        }
+
+        # The thermal conductivity of NbTi is one-tenth that of Ag in Still, CP and MXC.
+        # Ref: Pg. 8 of http://photonteck.com/uploads/20241109/b3531c2c55a53a8e034ba1e998f3f7ee.pdf
+
+        for temp_stage in ["Still", "CP", "MXC"]:
+                self.thermal_conductivity[temp_stage] = Ag_cable.thermal_conductivity[temp_stage] / 10
 
     def get_PHL(self, temp_stage, cable_length, T_lo, T_hi): # cable lengths in cm
         temp_diff = T_hi - T_lo 
@@ -340,7 +341,6 @@ class NbTi():
         else:
             return None
 #####################################################
-
 class HDW():
     def __init__(self, name):
         self.name = name
