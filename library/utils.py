@@ -560,3 +560,34 @@ def plot_heat_loadv2(df_plot, title, config_name, physical_qubits_dict, legend_b
     return df_plot_saved
 
 #######################################################################
+
+def bose_einstein_occupation(frequency_hz: float, temperature_k: float) -> float:
+    """
+    Calculate the mean thermal photon occupation number:
+
+        n_bar = 1 / [exp(h f / (k_B T)) - 1]
+
+    Parameters
+    ----------
+    frequency_hz : float
+        Frequency in hertz.
+    temperature_k : float
+        Temperature in kelvin.
+
+    Returns
+    -------
+    float
+        Mean thermal photon occupation number.
+    """
+    if frequency_hz <= 0:
+        raise ValueError("Frequency must be greater than zero.")
+    if temperature_k <= 0:
+        raise ValueError("Temperature must be greater than zero.")
+
+    exponent = (
+        PLANCK_CONSTANT * frequency_hz
+        / (BOLTZMANN_CONSTANT * temperature_k)
+    )
+
+    # expm1(x) evaluates exp(x) - 1 more accurately for small x.
+    return 1.0 / math.expm1(exponent)
