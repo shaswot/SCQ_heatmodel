@@ -93,7 +93,7 @@ CABLE_CONFIG_NAMES:
     MXC:   NbTi
   AMP_BIAS:  # DC Bias Lines
     RT:    null
-    50K:   HEMT_Bias_YBCO
+    50K:   HEMT_Bias_Mn
     4K:    HEMT_Bias_YBCO
     Still: null
     CP:    null

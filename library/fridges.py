@@ -35,8 +35,8 @@ XLD400 = { # 2019krinnerEngineeringCryogenicSetups
 KIDE = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     "cooling_power":{
         'RT'   : 1000, # Watts
-        '50K'  : 90, # Watts # 3 x 30 W. Conservative estimate based on cooling power of XLD1000sl which uses PT420 cryocoolers 
-        '4K'   : 2 * 3, # Watts # Assuming operating temperature of 4K [https://bluefors.com/products/measurement-infrastructure/high-density-wiring/]
+        '50K'  : 30 * 3, # Watts # Conservative estimate based on cooling power of XLD1000sl which uses dual-PT420 cryocoolers 
+        '4K'   : 2 * 3, # Watts # Assuming operating temperature of 4.5K [https://bluefors.com/products/measurement-infrastructure/high-density-wiring/]
         'Still': 90e-3, # Bluefors SC25
         'CP'   : 1E-3 * 3, # Watts
         'MXC'  : 30E-6 * 3 # Watts
@@ -44,7 +44,7 @@ KIDE = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     
     "temp":{
         'RT'   : 300,
-        '50K'  : 45, # Kelvin
+        '50K'  : 40, # Kelvin
         '4K'   : 4.5, # Kelvin
         'Still': 1.2, # Kelvin
         'CP'   : 200E-3, # Kelvin
@@ -89,35 +89,6 @@ XLD1000SL = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
         'MXC'  : 19.65 # cm
     }
 }
-
-# COLOSSUS = { # 2024hollisterUpdateColossusMK
-#     "cooling_power":{ # 2024hollisterUpdateColossusMK
-#     'RT'   : 20E3, # Watts
-#     '50K'  : 9E3, # Watts
-#     '4K'   : 200, # Watts 
-#     'Still': 100e-3, # Watts
-#     'CP'   : 2 * 1.5E-3, # Watts # 2 dilution units
-#     'MXC'  : 10 *30E-6 # Watts # 10 dilution units
-#     },
-    
-#     "temp":{
-#         'RT'   : 300,
-#         '50K'  : 80, # Kelvin
-#         '4K'   : 5, # Kelvin
-#         'Still': 1, # Kelvin
-#         'CP'   : 100E-3, # Kelvin
-#         'MXC'  : 20E-3 # Kelvin
-#     },
-    
-#     "lengths":{ # 2025raicuCryogenicThermalModeling - Table 1
-#         'RT'   : 100, # arbitrary
-#         '50K'  : 24.64, # cm (9.7 inch)
-#         '4K'   : 39.88, # cm (15.7 inch)
-#         'Still': 100.84, # cm (18.2 + 21.5 = 39.7 inch)
-#         'CP'   : 54.61, # cm (21.5 inch)
-#         'MXC'  : 54.61, # cm (21.5 inch)
-#     }
-# }
 
 COLOSSUS = { # 2024hollisterUpdateColossusMK
     "cooling_power":{ 
