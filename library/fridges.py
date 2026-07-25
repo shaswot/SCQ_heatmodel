@@ -35,7 +35,7 @@ XLD400 = { # 2019krinnerEngineeringCryogenicSetups
 KIDE = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     "cooling_power":{
         'RT'   : 1000, # Watts
-        '50K'  : 300, # Watts
+        '50K'  : 90, # Watts # 3 x 30 W. Conservative estimate based on cooling power of XLD1000sl which uses PT420 cryocoolers 
         '4K'   : 2 * 3, # Watts # Assuming operating temperature of 4K [https://bluefors.com/products/measurement-infrastructure/high-density-wiring/]
         'Still': 90e-3, # Bluefors SC25
         'CP'   : 1E-3 * 3, # Watts
@@ -44,7 +44,7 @@ KIDE = { # 2024blueforsKIDEProductOverview. Assuming 3 x XLD100sl
     
     "temp":{
         'RT'   : 300,
-        '50K'  : 40, # Kelvin
+        '50K'  : 45, # Kelvin
         '4K'   : 4.5, # Kelvin
         'Still': 1.2, # Kelvin
         'CP'   : 200E-3, # Kelvin
