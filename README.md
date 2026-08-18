@@ -80,7 +80,8 @@ This command builds and starts the containerized environment with the following 
 - Jupyter URL: `http://localhost:1168`
 - Password: `tqe` 
 
-`run_all_notebooks.ipynb` executes all the notebooks in the repository except for the surface-code cycle simulation notebooks in `notebooks/ler`. This can take significant time depending on your machine configuration (~2 hours in a 24-core machine).
+`run_all_notebooks.ipynb` executes all the notebooks in the repository except for the surface-code cycle simulation notebooks in `notebooks/ler`. This will take a few minutes.  
+The notebooks in `notebooks/ler` can take significant time depending on your machine configuration (~2 hours in a 24-core machine).
 
 ## Notes
 
