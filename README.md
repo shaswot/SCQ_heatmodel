@@ -1,6 +1,6 @@
 # SCQ_heatmodel
 
-This repository contains the notebook workflows used in **Revisiting Thermal Scalability of Large-Scale Superconducting Quantum Systems**.
+This repository contains the notebook workflows used in **[Revisiting Thermal Scalability of Large-Scale Superconducting Quantum Systems](https://arxiv.org/abs/2608.00990)**.
 
 ## Quick guide for reviewers
 
